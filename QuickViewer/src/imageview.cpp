@@ -1,4 +1,7 @@
 #include <QtWidgets>
+#ifndef QV_WITHOUT_OPENGL
+#  include <QtOpenGL>
+#endif
 
 #include "imageview.h"
 #include "qvapplication.h"
@@ -95,6 +98,8 @@ void ImageView::setPageManager(PageManager *manager)
     connect(manager, SIGNAL(readyForPaint()), this, SLOT(readyForPaint()));
     connect(manager, SIGNAL(volumeChanged(QString)), this, SLOT(on_volumeChanged_triggered(QString)));
     connect(manager, SIGNAL(pageAdded(ImageContent, bool)), this, SLOT(on_addImage_triggered(ImageContent, bool)));
+    connect(this, SIGNAL(slideShowStarted()), manager, SLOT(onSlideShowStarted()));
+    connect(this, SIGNAL(slideShowStopped()), manager, SLOT(onSlideShowStopped()));
 }
 
 void ImageView::toggleSlideShow()
@@ -104,8 +109,10 @@ void ImageView::toggleSlideShow()
     if(m_slideshowTimer) {
         delete m_slideshowTimer;
         m_slideshowTimer = nullptr;
+        emit slideShowStopped();
         return;
     }
+    emit slideShowStarted();
     m_slideshowTimer = new QTimer();
     connect(m_slideshowTimer, SIGNAL(timeout()), this, SLOT(on_slideShowChanging_triggered()));
     m_slideshowTimer->start(qApp->SlideShowWait());
@@ -509,36 +516,47 @@ void ImageView::onActionShowFullscreenSignage_triggered(bool enable)
     readyForPaint();
 }
 
+void ImageView::onActionHideMouseCursorInFullscreen_triggered(bool enable)
+{
+    qApp->setHideMouseCursorInFullscreen(enable);
+}
+
 #define HOVER_BORDER 20
 //#define NOT_HOVER_AREA 100
 
 void ImageView::mouseMoveEvent(QMouseEvent *e)
 {
     QGraphicsView::mouseMoveEvent(e);
-//    qDebug() << e;
+//    qDebug() << "qApp->HideMouseCursorInFullscreen()" << qApp->HideMouseCursorInFullscreen();
     int NOT_HOVER_AREA = width() / 3;
 	int hover_border = qApp->LargeToolbarIcons() ? 3 * HOVER_BORDER : HOVER_BORDER;
     if(e->pos().x() < hover_border && e->pos().y() < height()- hover_border) {
         if(m_hoverState != Qt::AnchorLeft)
             emit anchorHovered(Qt::AnchorLeft);
         m_hoverState = Qt::AnchorLeft;
-//        QApplication::setOverrideCursor(Qt::PointingHandCursor);
-        setCursor(QCursor(Qt::PointingHandCursor));
+        if(m_isFullScreen && qApp->HideMouseCursorInFullscreen())
+            setCursor(Qt::BlankCursor);
+        else
+            setCursor(Qt::PointingHandCursor);
         return;
     }
     if(e->pos().x() > width()- hover_border) {
         if(m_hoverState != Qt::AnchorRight)
             emit anchorHovered(Qt::AnchorRight);
         m_hoverState = Qt::AnchorRight;
-//        QApplication::setOverrideCursor(Qt::PointingHandCursor);
-        setCursor(QCursor(Qt::PointingHandCursor));
+        if(m_isFullScreen && qApp->HideMouseCursorInFullscreen())
+            setCursor(Qt::BlankCursor);
+        else
+            setCursor(Qt::PointingHandCursor);
 
         return;
     }
-    if(qApp->LoupeTool()) {
+    if(m_isFullScreen && qApp->HideMouseCursorInFullscreen())
+        setCursor(Qt::BlankCursor);
+    else if(qApp->LoupeTool()) {
         setCursor(m_loupeCursor);
     } else {
-        setCursor(QCursor(Qt::ArrowCursor));
+        setCursor(Qt::ArrowCursor);
     }
 //    qDebug() << qApp->ScrollWithCursorWhenZooming() << scene()->sceneRect() << size();
     if(m_loupeEnable)
@@ -547,7 +565,6 @@ void ImageView::mouseMoveEvent(QMouseEvent *e)
         scrollOnZoomMode();
     }
 
-//    QApplication::setOverrideCursor(Qt::ArrowCursor);
     if(e->pos().y() < hover_border) {
         if(m_hoverState != Qt::AnchorTop)
            emit anchorHovered(Qt::AnchorTop);

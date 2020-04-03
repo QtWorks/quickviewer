@@ -18,21 +18,46 @@ VolumeManager* VolumeManagerBuilder::CreateVolume(QObject* parent, QString path,
     if(dir.exists()) {
         return new VolumeManager(parent, qApp->ShowSubfolders() ? new FileLoaderSubDirectory(parent, path) : new FileLoaderDirectory(parent, path), pageManager);
     }
-    QString lower = path.toLower();
-    if(lower.endsWith(".zip") || lower.endsWith(".cbz")) {
-//#ifdef Q_OS_WIN
-//        return new VolumeManager(parent, new FileLoader7zArchive(parent, path), pageManager);
-//#else
-//        return new VolumeManager(parent, new FileLoaderZipArchive(parent, path), pageManager);
-//#endif
-        return new VolumeManager(parent, new FileLoader7zArchive(parent, path, qApp->ExtractSolidArchiveToTemporaryDir()), pageManager);
-    }
-    if(lower.endsWith(".7z")) {
-        return new VolumeManager(parent, new FileLoader7zArchive(parent, path, qApp->ExtractSolidArchiveToTemporaryDir()), pageManager);
-    }
-    if(lower.endsWith(".rar") || lower.endsWith(".cbr")) {
+
+    QFileInfo pathinfo(path);
+    QString ext = pathinfo.completeSuffix().toLower();
+
+    // Mapping extension aliases to original names
+    QString fmt = pathinfo.suffix().toLower();
+    if(ext.right(3) == "cbz") { fmt = "zip"; }
+    if(ext.right(3) == "cbr") { fmt = "rar"; }
+    if(ext.right(3) == "cb7") { fmt = "7z"; }
+    if(ext.right(6) == "tar.gz") { fmt = "tgz"; }
+    if(ext.right(7) == "tar.bz2") { fmt = "tbz2"; }
+    if(ext.right(6) == "tar.xz") { fmt = "txz"; }
+
+    // RAR deploys using unrar directly
+    if(fmt == "rar") {
         return new VolumeManager(parent, new FileLoaderRarArchive(parent, path), pageManager);
     }
+    // Automatically recognizes various archive formats that SevenZip can deploy
+    if(FileLoader7zArchive::st_supportedArchiveFormats.contains(fmt)) {
+        return new VolumeManager(parent, new FileLoader7zArchive(parent, path, fmt, qApp->ExtractSolidArchiveToTemporaryDir()), pageManager);
+    }
+
+
+
+
+//    QString lower = path.toLower();
+//    if(lower.endsWith(".zip") || lower.endsWith(".cbz")) {
+////#ifdef Q_OS_WIN
+////        return new VolumeManager(parent, new FileLoader7zArchive(parent, path), pageManager);
+////#else
+////        return new VolumeManager(parent, new FileLoaderZipArchive(parent, path), pageManager);
+////#endif
+//        return new VolumeManager(parent, new FileLoader7zArchive(parent, path, "zip", qApp->ExtractSolidArchiveToTemporaryDir()), pageManager);
+//    }
+//    if(lower.endsWith(".7z")) {
+//        return new VolumeManager(parent, new FileLoader7zArchive(parent, path, "7z", qApp->ExtractSolidArchiveToTemporaryDir()), pageManager);
+//    }
+//    if(lower.endsWith(".rar") || lower.endsWith(".cbr")) {
+//        return new VolumeManager(parent, new FileLoaderRarArchive(parent, path), pageManager);
+//    }
     if(IFileLoader::isImageFile(path)) {
         dir.cdUp();
         QString dirpath = dir.canonicalPath();

@@ -5,6 +5,7 @@
 #include "models/volumemanager.h"
 #include "imageview.h"
 #include "imagestring.h"
+#include "qlanguageselector.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +48,11 @@ public:
             action->setChecked(false);
         }
     }
+    void uncheckAllSortByMenus() {
+        foreach(QAction* action, m_sortByMenuGroup) {
+            action->setChecked(false);
+        }
+    }
     void makeBookmarkMenu();
     void setThumbnailManager(ThumbnailManager* manager);
     void resetVolumeCaption();
@@ -56,7 +62,8 @@ public:
 
     // FolderWindow
     bool isFolderSearching();
-    void createFolderWindow(bool docked);
+    void createFolderWindow(bool docked, QString path="");
+    bool changeFolderPath(QString path);
 
     // CatalogWindow
     bool isCatalogSearching();
@@ -96,6 +103,8 @@ public slots:
     void onFolderWindow_openVolume(QString path);
     void onActionOpenVolumeWithProgress_triggered(bool enabled);
     void onActionShowReadProgress_triggered(bool enabled);
+    void onActionSaveReadProgress_triggered(bool enable);
+    void onActionSaveFolderViewWidth_triggered(bool enable);
 
     // Catalog
     void onActionShowCatalog_triggered();
@@ -108,6 +117,7 @@ public slots:
     void onActionCatalogViewIconNoText_triggered();
     void onActionShowTagBar_triggered(bool enable);
     void onActionCatalogIconLongText_triggered(bool enable);
+    void onActionSaveCatalogViewWidth_triggered(bool enable);
 
     // RetouchWindow
     void onActionShowBrightnessWindow_triggered(bool enable);
@@ -139,6 +149,7 @@ public slots:
 
     // SlideShow
     void onActionSlideShow_triggered(bool enable);
+    void onSlideShowStopped();
 
     // Toolbars
     void onActionShowToolBar_triggered(bool showToolBar);
@@ -157,6 +168,7 @@ public slots:
 //    void on_languageSpanish_triggered();
 //    void on_languageChinese_triggered();
     void onLanguageSelector_languageChanged(QString language);
+    void onLanguageSelector_openTextEditorForLanguage(LanguageInfo info);
     void onActionRegistAssocs_triggered();
     void onActionRegistAssocsUAC_triggered();
 
@@ -188,6 +200,14 @@ public slots:
     void onActionLoadBookmark_triggered();
     void onMenuLoadBookmark_triggered(QAction *action);
 
+    // Sort by
+    void onActionSortByFileName_triggered(bool enable);
+    void onActionSortByFileNameDescending_triggered(bool enable);
+    void onActionSortByFileSize_triggered(bool enable);
+    void onActionSortByFileSizeDescending_triggered(bool enable);
+    void onActionSortByModifiedTime_triggered(bool enable);
+    void onActionSortByModifiedTimeDescending_triggered(bool enable);
+
     // Others
     virtual void onGraphicsView_anchorHovered(Qt::AnchorPoint anchor);
     void onScrollModeChanged(bool scrolled);
@@ -200,6 +220,7 @@ protected:
     Ui::MainWindow *ui;
     bool m_viewerWindowStateMaximized;
     bool m_sliderChanging;
+    bool m_onWindowClosing;
 
     /**
      * @brief m_contextMenu Define on the context menu mainwindow.ui for the main screen and separate at startup
@@ -213,6 +234,7 @@ protected:
     ImageString m_imageString;
     QList<QAction*> m_shaderMenuGroup;
     QList<QAction*> m_languageMenuGroup;
+    QList<QAction*> m_sortByMenuGroup;
     ThumbnailManager* m_thumbManager;
     FolderWindow* m_folderWindow;
     CatalogWindow* m_catalogWindow;

@@ -24,10 +24,12 @@ You can browse images with much smoother response than ever before.
  - Portable (without installers, registries, external libraries)
  - Tablet PC ready
  - 2 Page Spread viewing (two images once, for digital books/comics)
- - To read archives directly (zip/7z/rar/cbr/cbz)
- - To show images (bmp/png/jpeg/webp/ico/tga/tiff/gif)
+ - To read archives directly (zip/7z/rar/cbz/cb7/cbr/cab/tar.gz/tar.bz2/tar.xz/etc ...)
+ - To show images (bmp/png/jpeg/ico/dds/tga/tiff/gif)
+   - Supported for modern formats(JPEG 2000/JPEG XR/WebP)
    - Supported for Animated PNG(APNG)/GIF
    - Auto rotation (using JPEG EXIF)
+   - Supported for CYMK JPEGs(auto converted to sRGB)
  - To show Raw digital camera images
    - Canon (crw, cr2)
    - Nicon (nef)
@@ -37,7 +39,7 @@ You can browse images with much smoother response than ever before.
  - Can make/view/search catalog from thousands of your digital books
  - Can search books from auto generated tags
  - Touch panel input (Page navigations/Zooming/Rotate/Change fullscreen)
- - Multilingual support (English/Spanish/Simplified Chinese/Japanese/Greek)
+ - Multilingual support(English/Spanish/Simplified Chinese/French/Arabic/Russian/Japanese/Greek)
 
 
 ## How to use
@@ -50,7 +52,7 @@ You can browse images with much smoother response than ever before.
 
 The latest version is **release_version**.
 
-You can download **[Release Builded](https://github.com/kanryu/quickviewer/releases)** on the page. (Windows x86/x64, Linux AppImage x64)
+You can download **[Release Builds](https://github.com/kanryu/quickviewer/releases)** for Windows x86/x64, Mac dmg x64, and Linux AppImage x64.
 
 You can also clone the latest source code from **[this repository.](https://github.com/kanryu/quickviewer)**
 
@@ -61,8 +63,12 @@ You can also clone the latest source code from **[this repository.](https://gith
     - [https://www.portablefreeware.com/index.php?id=2899](https://www.portablefreeware.com/index.php?id=2899)
 - **MajorGeeks.com**
     - [http://www.majorgeeks.com/files/details/quickviewer.html](http://www.majorgeeks.com/files/details/quickviewer.html)
+- **MADDOWNLOAD.COM**
+    - [https://maddownload.com/photo-editors/quickviewer/](https://maddownload.com/photo-editors/quickviewer/)
 - **ghacks.net**
     - [https://www.ghacks.net/2017/06/27/quickviewer-ultra-fast-windows-image-viewer/](https://www.ghacks.net/2017/06/27/quickviewer-ultra-fast-windows-image-viewer/)
+- **KaranPC**
+    - [https://karanpc.com/quickviewer-free-download/](https://karanpc.com/quickviewer-free-download/)
 - **Downloadcrew**
     - [https://downloadcrew.com/article/35266-quickviewer](https://downloadcrew.com/article/35266-quickviewer)
 - **SOFTPEDIA**
@@ -77,18 +83,28 @@ You can also clone the latest source code from **[this repository.](https://gith
     - [http://www.trishtech.com/2017/08/quickviewer-comfortable-image-viewer-for-windows/](http://www.trishtech.com/2017/08/quickviewer-comfortable-image-viewer-for-windows/)
 - **Download82**
     - [http://www.download82.com/download/windows/quickviewer/](http://www.download82.com/download/windows/quickviewer/)
+- **PHOTO-FREEWARE.NET**
+    - [http://www.photo-freeware.net/download/action/show/Item/quickviewer/](http://www.photo-freeware.net/download/action/show/Item/quickviewer/)
+- **EBOOKEE**
+    - [https://ebookee.org/QuickViewer-1-1-7-Multilingual_4140431.html](https://ebookee.org/QuickViewer-1-1-7-Multilingual_4140431.html)
 - **Vector** (in Japanese)
     - [http://www.vector.co.jp/magazine/softnews/170914/n1709141.html](http://www.vector.co.jp/magazine/softnews/170914/n1709141.html)
 - **OSDN** (in Japanese)
     - [https://ja.osdn.net/projects/quickviewer/reviews/](https://ja.osdn.net/projects/quickviewer/reviews/)
+- **PCあれこれ探索** (in Japanese)
+    - [https://pc.mogeringo.com/archives/68711](https://pc.mogeringo.com/archives/68711)
 - **Free SoftNavi** (in Japanese)
     - [http://www.softnavi.com/review/graphic_viewer/quickviewer_1.html](http://www.softnavi.com/review/graphic_viewer/quickviewer_1.html)
+- **写真・画像ソフトのガイド** (in Japanese)
+    - [http://www.photo-soft.net/freesoft/free0420.html](http://www.photo-soft.net/freesoft/free0420.html)
+- **REDES@ZONE** (in Spanish)
+    - [https://www.redeszone.net/2017/06/28/quickviewer-visor-imagenes-optimizado-windows/](https://www.redeszone.net/2017/06/28/quickviewer-visor-imagenes-optimizado-windows/)
 - **PC actual** (in Spanish)
     - [http://www.pcactual.com/noticias/actualidad/quickviewer_13551](http://www.pcactual.com/noticias/actualidad/quickviewer_13551)
 - **SOFTZone** (in Spanish)
     - [https://www.softzone.es/2017/06/27/quickviewer-visor-imagenes/](https://www.softzone.es/2017/06/27/quickviewer-visor-imagenes/)
-- **REDES@ZONE** (in Spanish)
-    - [https://www.redeszone.net/2017/06/28/quickviewer-visor-imagenes-optimizado-windows/](https://www.redeszone.net/2017/06/28/quickviewer-visor-imagenes-optimizado-windows/)
+- **TOPFREEWARE** (in Spanish)
+    - [https://www.topfreewares.com.br/top-5-visualizadores-imagens-gratuitos-windows/](https://www.topfreewares.com.br/top-5-visualizadores-imagens-gratuitos-windows/)
 - **SOFT DOWNLOAD** (in Portuguese)
     - [http://www.softdownload.com.br/visualize-fotos-rapidamente-windows-quickviewer.html](http://www.softdownload.com.br/visualize-fotos-rapidamente-windows-quickviewer.html)
 - **libellules.ch** (in French)
@@ -104,30 +120,40 @@ You can also clone the latest source code from **[this repository.](https://gith
     - [http://www.paperblog.fr/8518927/quickviewer/](http://www.paperblog.fr/8518927/quickviewer/)
 - **V2EX** (in Simplified Chinese)
     - [https://www.v2ex.com/t/419966](https://www.v2ex.com/t/419966)
+- **cfan 科技新生活** (in Simplified Chinese)
+    - [http://www.cfan.com.cn/2019/0429/132353.shtml](http://www.cfan.com.cn/2019/0429/132353.shtml)
+- **河东软件园** (in Simplified Chinese)
+    - [http://www.pc0359.cn/downinfo/89233.html](http://www.pc0359.cn/downinfo/89233.html)
+- **QuickViewer打开浏览本地照片教程(极速下载站)** (in Simplified Chinese)
+    - [http://www.jisuxz.com/news/20491.html](http://www.jisuxz.com/news/20491.html)
 - **软件No1** (in Simplified Chinese)
     - [http://www.rjno1.com/best/p/2967-quickviewer.html](http://www.rjno1.com/best/p/2967-quickviewer.html)
 - **快乐无极** (in Simplified Chinese)
     - [http://www.oyksoft.com/soft/46227.html](http://www.oyksoft.com/soft/46227.html)
 - **胖蒜** (in Simplified Chinese)
     - [https://pangsuan.com/p/QuickViewer.html](https://pangsuan.com/p/QuickViewer.html)
+- **脚本之家** (in Simplified Chinese)
+    - [https://www.jb51.net/softs/592327.html](https://www.jb51.net/softs/592327.html)
 - **ZEGMONET** (in Turkish)
     - [http://zegmonet.com/2017/08/26/windows-icin-goruntu-goruntuleyici-programi-quickviewer](http://zegmonet.com/2017/08/26/windows-icin-goruntu-goruntuleyici-programi-quickviewer)
 - **sekizbir.com** (in Turkish)
     - [https://sekizbir.com/quickviewer-ultra-hizli-bir-windows-resim-goruntuleyici/](https://sekizbir.com/quickviewer-ultra-hizli-bir-windows-resim-goruntuleyici/)
 - **indiriliyo** (in Turkish)
     - [http://www.indiriliyo.com/quickviewer-indir-11274/](http://www.indiriliyo.com/quickviewer-indir-11274/)
+- **Hilalay** (in Turkish)
+    - [https://hilalay.com/windows-icin-goruntu-goruntuleyicisi-quickviewer/](https://hilalay.com/windows-icin-goruntu-goruntuleyicisi-quickviewer/)
 - **AfterDawn Nederland** (in Dutch)
     - [http://nl.afterdawn.com/downloads/desktop/beeld_kijken/quickviewer-64-bit.cfm](http://nl.afterdawn.com/downloads/desktop/beeld_kijken/quickviewer-64-bit.cfm)
-- *xCoumputer* (in Dutch)
+- **xCoumputer** (in Dutch)
     - [http://xcomputer.site/2017/06/27/quickviewer-is-een-ultra-fast-windows-image-viewer/](http://xcomputer.site/2017/06/27/quickviewer-is-een-ultra-fast-windows-image-viewer/)
-- **DUNDI** (in Italian)
-    - [http://www.dundi.it/quickviewer-un-visualizzatore-veloce-di-immagini-per-windows/](http://www.dundi.it/quickviewer-un-visualizzatore-veloce-di-immagini-per-windows/)
-- **Download HTML.it** (in Italian)
-    - [http://download.html.it/software/quickviewer/](http://download.html.it/software/quickviewer/)
+- **Computer Idee - Dagelijks computer nieuws, tips en trucs en gratis downloads** (in Dutch)
+    - [https://www.computeridee.nl/downloads/foto/quickviewer-een-snelle-plaatjesviewer-met-leuke-extras/](https://www.computeridee.nl/downloads/foto/quickviewer-een-snelle-plaatjesviewer-met-leuke-extras/)
 - **مدونة حاسب سهل** (in Arabic)
     - [http://www.pcfacile1.com/archives/13505](http://www.pcfacile1.com/archives/13505)
 - **SARZAMINDOWNLOAD.COM** (in Arabic)
     - [http://www.sarzamindownload.com/9899/](http://www.sarzamindownload.com/9899/)
+- **دانلود رایگان نرم افزار** (in Arabic)
+    - [https://patoghu.com/grafick/photo_explorer/16288-quickviewer.html](https://patoghu.com/grafick/photo_explorer/16288-quickviewer.html)
 - **Мир Софта** (in Russian)
     - [https://mirsofta.ru/soft/QuickViewer.html](https://mirsofta.ru/soft/QuickViewer.html)
 - **zoomexe** (in Russian)
@@ -140,6 +166,10 @@ You can also clone the latest source code from **[this repository.](https://gith
     - [http://www.chip.de/downloads/QuickViewer_117674551.html](http://www.chip.de/downloads/QuickViewer_117674551.html)
 - **Pc Professionale** (in Italian)
     - [https://www.pcprofessionale.it/magazine/sommario-novembre-2017/](https://www.pcprofessionale.it/magazine/sommario-novembre-2017/)
+- **DUNDI** (in Italian)
+    - [http://www.dundi.it/quickviewer-un-visualizzatore-veloce-di-immagini-per-windows/](http://www.dundi.it/quickviewer-un-visualizzatore-veloce-di-immagini-per-windows/)
+- **Download HTML.it** (in Italian)
+    - [http://download.html.it/software/quickviewer/](http://download.html.it/software/quickviewer/)
 - **THAIWARE.com** (in Thai)
     - [https://software.thaiware.com/13230-QuickViewer-Download.html](https://software.thaiware.com/13230-QuickViewer-Download.html)
 - **Dataporten** (in Norwegian)
@@ -162,10 +192,16 @@ You can also clone the latest source code from **[this repository.](https://gith
     - [http://gr.pcmag.com/free-apps/28062/news/e-dorean-epharmoge-tes-emeras-quickviewer](http://gr.pcmag.com/free-apps/28062/news/e-dorean-epharmoge-tes-emeras-quickviewer)
 - **geogeo.gr** (in Greek)
     - [https://www.geogeo.gr/index.php?topic=1787.0](https://www.geogeo.gr/index.php?topic=1787.0)
+- **lovefortechnology** (in Greek)
+    - [https://www.lovefortechnology.net/2018/12/quickviewer_11.html](https://www.lovefortechnology.net/2018/12/quickviewer_11.html)
 - **BUG ONLINE** (in Croatian or Bosnian)
     - [http://www.bug.hr/program/quickviewer-102/97548.aspx](http://www.bug.hr/program/quickviewer-102/97548.aspx)
 - **Žive.sk** (in Slovak)
     - [https://www.zive.sk/clanok/128715/novy-softver-expresny-prehliadac-fotiek-vynoveny-kancelarsky-balik/](https://www.zive.sk/clanok/128715/novy-softver-expresny-prehliadac-fotiek-vynoveny-kancelarsky-balik/)
+- **ROOT.CZ** (in Czech)
+    - [https://www.root.cz/clanky/softwarova-sklizen-22-8-2018/](https://www.root.cz/clanky/softwarova-sklizen-22-8-2018/)
+- **Taimeienphi.vn** (in Vietnamese)
+    - [https://news.bangnam.com/url/taimienphi.vn/download-quickviewer-38922](https://news.bangnam.com/url/taimienphi.vn/download-quickviewer-38922)
 
 Thanks for reviewers! :)
 
@@ -347,6 +383,10 @@ You can do screen operations with the main menu, tool bar, mouse button, wheel, 
     - strongly recommended on x64 architecture
 - Memory
     - over 1GB free Memory
+
+## Privacy Policy
+[Privacy Policy](https://kanryu.github.io/quickviewer/privacypolicy)
+
 
 ```
 The final element.

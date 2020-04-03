@@ -70,6 +70,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     ui->checkBoxExtractSolidToTemporary->setChecked(qApp->ExtractSolidArchiveToTemporaryDir());
     ui->checkBoxProhibitMultipleRunning->setChecked(qApp->ProhibitMultipleRunning());
     ui->checkBoxUseDirect2D->setChecked(qApp->UseDirect2D());
+    ui->checkBoxSlideshowRandomly->setChecked(qApp->SlideShowRandomly());
 
     ui->checkBoxHideMenuBarParmanently->setChecked(qApp->HideMenuBarParmanently());
     ui->checkBoxHideToolBarParmanently->setChecked(qApp->HideToolBarParmanently());
@@ -113,6 +114,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
         ui->radioButtonStatusBarUserDefined->setChecked(true);
     if(!ui->radioButtonStatusBarUserDefined->isChecked())
         ui->lineEditStatusBarUserStyle->setEnabled(false);
+
+    ui->comboBoxThemeSelector->setCurrentText(qApp->UiTheme());
 }
 
 OptionsDialog::~OptionsDialog()
@@ -133,6 +136,7 @@ void OptionsDialog::reflectResults()
     qApp->setExtractSolidArchiveToTemporaryDir(ui->checkBoxExtractSolidToTemporary->isChecked());
     qApp->setProhibitMultipleRunning(ui->checkBoxProhibitMultipleRunning->isChecked());
     qApp->setUseDirect2D(ui->checkBoxUseDirect2D->isChecked());
+    qApp->setSlideShowRandomly(ui->checkBoxSlideshowRandomly->isChecked());
 
     qApp->setHideMenuBarParmanently(ui->checkBoxHideMenuBarParmanently->isChecked());
     qApp->setHideToolBarParmanently(ui->checkBoxHideToolBarParmanently->isChecked());
@@ -159,6 +163,8 @@ void OptionsDialog::reflectResults()
         qApp->setStatusTextFormat(IRFANVIEW_STATUSBAR_FORMAT);
     else
         qApp->setStatusTextFormat(ui->lineEditStatusBarUserStyle->text());
+
+    qApp->setUiTheme(ui->comboBoxThemeSelector->currentText());
 }
 
 void OptionsDialog::resetColorButton(QPushButton* btn, QColor color)
@@ -268,3 +274,4 @@ void OptionsDialog::onCheckBoxShowUsage_clicked(bool enabled)
 {
     ui->labelFormatUsage->setVisible(enabled);
 }
+

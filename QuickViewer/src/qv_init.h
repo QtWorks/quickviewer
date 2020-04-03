@@ -5,13 +5,16 @@
 
 #define APP_ORGANIZATION "KATO Kanryu(k.kanryu@gmail.com)"
 #define APP_COPYRIGHT    "Copyright 2017 KATO Kanryu"
+#define QV_APPNAME "QuickViewer"
+#define QV_THUMBNAILS "thumbnail.sqlite3.db"
 
 #ifdef Q_OS_WIN
 #define APP_INI "quickviewer.ini"
 #define PROGRESS_INI "progress.ini"
 #define LINEFEED "\r\n"
 #else
-#define APP_INI ".quickviewer/quickviewer.ini"
+#define QV_DATADIR ".quickviewer"
+#define APP_INI QV_DATADIR "/quickviewer.ini"
 #define PROGRESS_INI ".quickviewer/progress.ini"
 #define LINEFEED "\n"
 #endif
@@ -80,6 +83,25 @@ public:
         FitToWidth
     };
     Q_ENUM(FitMode)
+
+    enum OptionViewOnStartup {
+        NoViewStartup,
+        FolderStartup,
+        CatalogStartup,
+        RetouchStartup,
+//        ExifStartup,
+    };
+    Q_ENUM(OptionViewOnStartup)
+
+    enum ImageSortBy {
+        SortByFileName,
+        SortByFileNameDescending,
+        SortByFileSize,
+        SortByFileSizeDescending,
+        SortByModifiedTime,
+        SortByModifiedTimeDescending,
+    };
+    Q_ENUM(ImageSortBy)
 };
 
 

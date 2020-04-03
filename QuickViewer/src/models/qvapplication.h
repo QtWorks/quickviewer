@@ -49,7 +49,7 @@ class QVApplication : public QApplication
     Q_PROPERTY(bool ShowFullscreenSignage READ ShowFullscreenSignage WRITE setShowFullscreenSignage)
 //    Q_PROPERTY(bool ShowFullscreenTitleBar READ ShowFullscreenTitleBar WRITE setShowFullscreenTitleBar)
 
-    // DuapView
+    // DualView
     Q_PROPERTY(bool DualView READ DualView WRITE setDualView)
     Q_PROPERTY(bool StayOnTop READ StayOnTop WRITE setStayOnTop)
     Q_PROPERTY(bool RightSideBook READ RightSideBook WRITE setRightSideBook)
@@ -96,12 +96,23 @@ class QVApplication : public QApplication
     Q_PROPERTY(QString UiLanguage READ UiLanguage WRITE setUiLanguage)
     Q_PROPERTY(bool ConfirmDeletePage READ ConfirmDeletePage WRITE setConfirmDeletePage)
 
+    // Theme
+    Q_PROPERTY(QString UiTheme READ UiTheme WRITE setUiTheme)
+
 public:
     typedef QActionManager<QKeySequence, QKeySequence, QAction*> KeyActionManager;
     typedef QActionManager<QMouseSequence, QMouseValue, QAction*> MouseActionManager;
     explicit QVApplication(int &argc, char **argv);
+    ~QVApplication();
     QString getApplicationFilePath(QString subFilePath);
+    /**
+     * @brief Returns the path of the setting file according to the execution environment of the application
+     * @param subFilePath
+     * @return
+     */
+    QString getFilePathOfApplicationSetting(QString subFilePath);
     QString getUserHomeFilePath(QString subFilePath);
+    QString getTranslationPath();
 
     void myInstallTranslator();
 
@@ -119,7 +130,11 @@ public:
     bool UseFastDCTForJPEG() { return m_useFastDCTForJPEG; }
     void setUseFastDCTForJPEG(bool useFastDCTForJPEG) { m_useFastDCTForJPEG = useFastDCTForJPEG; }
 
+    // Navigations
+
     // View
+    qvEnums::ImageSortBy ImageSortBy() { return m_imageSortBy; }
+    void setImageSortBy(qvEnums::ImageSortBy sortBy) { m_imageSortBy = sortBy; }
     bool Fitting() { return m_fitting; }
     void setFitting (bool fitting) { m_fitting = fitting; }
     qvEnums::FitMode ImageFitMode() { return m_fitMode; }
@@ -154,6 +169,10 @@ public:
     void setHidePageBarInFullscreen(bool hidePageBarInFullscreen) { m_hidePageBarInFullscreen = hidePageBarInFullscreen; }
     bool HideScrollBarInFullscreen() { return m_hideScrollBarInFullscreen; }
     void setHideScrollBarInFullscreen(bool hideScrollBarInFullscreen) { m_hideScrollBarInFullscreen = hideScrollBarInFullscreen; }
+    bool HideMouseCursorInFullscreen() { return !InnerFrameShowing() && m_hideMouseCursorInFullscreen; }
+    void setHideMouseCursorInFullscreen(bool hideMouseCursorInFullscreen) { m_hideMouseCursorInFullscreen = hideMouseCursorInFullscreen; }
+    bool InnerFrameShowing() { return m_innerFrameShowing; }
+    void setInnerFrameShowing(bool innerFrameShowing) { m_innerFrameShowing = innerFrameShowing; }
 
     QString TitleTextFormat() { return m_titleTextFormat; }
     void setTitleTextFormat(QString titleTextFormat) { m_titleTextFormat = titleTextFormat; }
@@ -167,6 +186,12 @@ public:
     void setLoupeTool(bool loupeTool) { m_loupeTool = loupeTool; }
     bool ScrollWithCursorWhenZooming() { return m_scrollWithCursorWhenZooming; }
     void setScrollWithCursorWhenZooming(bool scrollWithCursorWhenZooming) { m_scrollWithCursorWhenZooming = scrollWithCursorWhenZooming; }
+    qvEnums::OptionViewOnStartup ShowOptionViewOnStartup() { return m_showOptionViewOnStartup; }
+    void setShowOptionViewOnStartup(qvEnums::OptionViewOnStartup fitMode) { m_showOptionViewOnStartup = fitMode; }
+    bool SlideShowOnNormalWindow() { return m_slideShowOnNormalWindow; }
+    void setSlideShowOnNormalWindow(bool slideShowOnNormalWindow) { m_slideShowOnNormalWindow = slideShowOnNormalWindow; }
+    bool SlideShowRandomly() { return m_slideShowRandomly; }
+    void setSlideShowRandomly(bool slideshowRandomly) { m_slideShowRandomly = slideshowRandomly; }
 
 
     // DualView
@@ -246,6 +271,12 @@ public:
     void setShowReadProgress (bool showReadProgress) { m_showReadProgress = showReadProgress; }
     bool ShowSubfolders() { return m_showSubfolders; }
     void setShowSubfolders (bool showSubfolders) { m_showSubfolders = showSubfolders; }
+    bool SaveReadProgress() { return m_saveReadProgress; }
+    void setSaveReadProgress(bool saveReadProgress) { m_saveReadProgress = saveReadProgress; }
+    bool SaveFolderViewWidth() { return m_saveFolderViewWidth; }
+    void setSaveFolderViewWidth (bool saveFolderViewWidth) { m_saveFolderViewWidth = saveFolderViewWidth; }
+    int FolderViewWidth() { return m_folderViewWidth; }
+    void setFolderViewWidth(int folderViewWidth) { m_folderViewWidth = folderViewWidth; }
 
     // Catalog
     qvEnums::CatalogViewMode CatalogViewModeSetting() { return m_catalogViewModeSetting; }
@@ -264,6 +295,10 @@ public:
     void setShowTagBar (bool showTagBar) { m_showTagBar = showTagBar; }
     bool IconLongText() { return m_iconLongText; }
     void setIconLongText (bool iconLongText) { m_iconLongText = iconLongText; }
+    bool SaveCatalogViewWidth() { return m_saveCatalogViewWidth; }
+    void setSaveCatalogViewWidth (bool saveCatalogViewWidth) { m_saveCatalogViewWidth = saveCatalogViewWidth; }
+    int CatalogViewWidth() { return m_catalogViewWidth; }
+    void setCatalogViewWidth(int catalogViewWidth) { m_catalogViewWidth = catalogViewWidth; }
 
     // ShaderEffect
     qvEnums::ShaderEffect Effect() { return m_effect; }
@@ -284,6 +319,18 @@ public:
     KeyActionManager& keyActions() { return m_keyActions; }
     MouseActionManager& mouseActions() { return m_mouseActions; }
 
+    // Appearance
+    QString UiTheme() { return m_uiTheme; }
+    void setUiTheme (QString uiTheme) {
+        m_uiTheme = uiTheme;
+        //QString themeFilePath = getApplicationFilePath(":/themes/"+m_uiTheme+".qss"); //Local files
+        QString themeFilePath(":/themes/"+m_uiTheme+".qss"); // Resource files
+        QFile File(themeFilePath);
+        File.open(QFile::ReadOnly);
+        QString styleSheet = QString(File.readAll());
+        QApplication::setStyleSheet(styleSheet);
+    }
+
     void registDefaultKeyMap();
     void registDefaultMouseMap();
     void registActions(Ui::MainWindow* ui);
@@ -303,9 +350,10 @@ private:
     int m_maxTextureSize;
 
     // Navigations
-    bool m_suppressKeyRepeat;
+    bool m_slideShowRandomly;
 
     // View
+    qvEnums::ImageSortBy m_imageSortBy;
     bool m_fitting;
 //    bool m_fitToWidth;
     qvEnums::FitMode m_fitMode;
@@ -343,6 +391,7 @@ private:
     bool m_hideToolBarInFullscreen;
     bool m_hidePageBarInFullscreen;
     bool m_hideScrollBarInFullscreen;
+    bool m_hideMouseCursorInFullscreen;
 
     bool m_topWindowWhenRunWithAssoc;
     bool m_topWindowWhenDropped;
@@ -351,6 +400,8 @@ private:
     QString m_titleTextFormat;
     QString m_statusTextFormat;
     bool m_scrollWithCursorWhenZooming;
+    qvEnums::OptionViewOnStartup m_showOptionViewOnStartup;
+    bool m_slideShowOnNormalWindow;
 
     // ToolBars
     bool m_showToolBar;
@@ -363,6 +414,7 @@ private:
     QByteArray m_windowGeometry;
     QByteArray m_windowState;
     bool m_beginAsFullscreen;
+    bool m_innerFrameShowing;
 
     // File
     bool m_autoLoaded;
@@ -381,6 +433,9 @@ private:
     qvEnums::FolderViewSort m_folderSortMode;
     bool m_openVolumeWithProgress;
     bool m_showReadProgress;
+    bool m_saveReadProgress;
+    bool m_saveFolderViewWidth;
+    int m_folderViewWidth;
 
     // Catalog
     qvEnums::CatalogViewMode m_catalogViewModeSetting;
@@ -392,6 +447,8 @@ private:
     bool m_switchVolumesWhenCatalogShowing;
     bool m_showTagBar;
     bool m_iconLongText;
+    bool m_saveCatalogViewWidth;
+    int m_catalogViewWidth;
 
     // KeyConfig
     QActionManager<QKeySequence, QKeySequence, QAction*> m_keyActions;
@@ -408,11 +465,19 @@ private:
     QTranslator *m_translator;
     bool m_confirmDeletePage;
 
-    QSettings m_settings;
+    // Appearance
+    QString m_uiTheme;
+
+    QSettings* m_settings;
     BookProgressManager* m_bookshelfManager;
 
     QLanguageSelector m_languageSelector;
     QLanguageSelector m_qtbaseLanguageSelector;
+
+#if defined(Q_OS_WIN)
+    // System Dependable
+    bool m_portable;
+#endif
 };
 
 #endif // QVAPPLICATION_H

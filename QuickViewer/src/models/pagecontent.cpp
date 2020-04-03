@@ -115,7 +115,7 @@ QPoint PageContent::Offset(int rotateOffset) {
 
 QSize PageContent::CurrentSize(int rotateOffset) {
     int rot = (Rotate+rotateOffset) % 360;
-    return rot==90 || rot==270 ? QSize(Ic.Image.height(), Ic.Image.width()) : Ic.Image.size();
+    return rot==90 || rot==270 ? QSize(Ic.BaseSize.height(), Ic.BaseSize.width()) : Ic.BaseSize;
 }
 
 QRect PageContent::setPageLayoutFitting(QRect viewport, PageContent::PageAlign align, qvEnums::FitMode fitMode, qreal loupe, int rotateOffset) {
@@ -198,6 +198,7 @@ static QZimg::FilterMode ShaderEffect2FilterMode(qvEnums::ShaderEffect effect)
     case qvEnums::CpuSpline16: return QZimg::ResizeSpline16;
     case qvEnums::CpuSpline36: return QZimg::ResizeSpline36;
     case qvEnums::CpuLanczos3: return QZimg::ResizeLanczos3;
+    case qvEnums::CpuLanczos4: return QZimg::ResizeLanczos4;
     case qvEnums::BilinearAndCpuBicubic: return QZimg::ResizeBicubic;
     case qvEnums::BilinearAndCpuSpline16: return QZimg::ResizeSpline16;
     case qvEnums::BilinearAndCpuSpline36: return QZimg::ResizeSpline36;

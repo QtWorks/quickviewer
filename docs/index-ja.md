@@ -23,10 +23,12 @@ fulltitle: QuickViewer オフィシャルページ
 - インストール作業なしでどこでも動いてレジストリの書き込みなし
 - タブレットPC対応
 - 本を読むのに便利な見開き表示
-- アーカイブファイルの直接読み込み(zip/7z/rar/cbr/cbz)
-- これらの画像形式に対応(bmp/png/jpeg/webp/ico/tga/tiff/gif)
+- アーカイブファイルの直接読み込み(zip/7z/rar/cbz/cb7/cbr/cab/tar.gz/tar.bz2/tar.xz/他)
+- これらの画像形式に対応(bmp/png/jpeg/ico/dds/tga/tiff/gif)
+    - 現代的な画像形式に対応(JPEG 2000/JPEG XR/WebP)
     - アニメーションPNG(APNG)/GIFに対応
     - JPEG EXIFに対応し、撮影したそのままの向きで画像を表示
+    - CMYK形式のJPEGに対応し、sRGBに自動変換されて表示
 - 主要カメラメーカーのRaw画像形式に対応
     - Canon(crw, cr2)
     - Nicon(nef)
@@ -36,7 +38,7 @@ fulltitle: QuickViewer オフィシャルページ
  - あなたの何千冊ものデジタルブック、マンガを『カタログ』として登録でき、軽快に一覧表示、検索できます
  - カタログの本は自動生成されたタグでも検索できます
  - タッチパネル入力(ページ切り替え/フルスクリーン切り替え/画像拡大・縮小・回転)
- - 複数言語対応(日本語/英語/簡体字中国語/スペイン語/ギリシャ語)
+ - 複数言語対応(日本語/英語/簡体字中国語/スペイン語/フランス語/アラビア語/ロシア語/ギリシャ語)
  
 ## 使い方
 
@@ -47,17 +49,20 @@ fulltitle: QuickViewer オフィシャルページ
 
 ## ダウンロード
 
-最新版は **release_version** です。
-
-[ビルド済みリリース版](https://github.com/kanryu/quickviewer/releases) からダウンロードしてください。(Windows x86/x64, Linux AppImage x64)
-
-ソースコードについては [リポジトリ](https://github.com/kanryu/quickviewer) から最新のソースコードをcloneして入手してください。
+- 最新版は **release_version** です。
+- [ビルド済みリリース版](https://github.com/kanryu/quickviewer/releases) からダウンロードしてください。(Windows x86/x64, Mac dmg x64, Linux AppImage x64)
+    - **Lhaplus** などのdeflate64に対応していない古いアーカイバは使用しないでください。[**7z**](https://sevenzip.osdn.jp/)などをご利用ください。
+- ソースコードについては [リポジトリ](https://github.com/kanryu/quickviewer) から最新のソースコードをcloneして入手してください。
 
 ## 外部レビュー
 - **Vector様**
     - [http://www.vector.co.jp/magazine/softnews/170914/n1709141.html](http://www.vector.co.jp/magazine/softnews/170914/n1709141.html)
+- **PCあれこれ探索様**
+    - [https://pc.mogeringo.com/archives/68711](https://pc.mogeringo.com/archives/68711)
 - **さのっち様(OSDN)**
     - [https://ja.osdn.net/projects/quickviewer/reviews/](https://ja.osdn.net/projects/quickviewer/reviews/)
+- **写真・画像ソフトのガイド様**
+    - [http://www.photo-soft.net/freesoft/free0420.html](http://www.photo-soft.net/freesoft/free0420.html)
 - **Free SoftNavi様**
     - [http://www.softnavi.com/review/graphic_viewer/quickviewer_1.html](http://www.softnavi.com/review/graphic_viewer/quickviewer_1.html)
 - **the PORTABLE FREEWARE collection** (英語)

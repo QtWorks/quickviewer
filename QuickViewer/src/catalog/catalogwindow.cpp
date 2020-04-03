@@ -37,6 +37,10 @@ CatalogWindow::CatalogWindow(QWidget *parent, Ui::MainWindow *uiMain)
 {
     ui->setupUi(this);
 
+#ifdef Q_OS_MACOS
+    ui->menuBar->setNativeMenuBar(false);
+#endif
+
     // VolumeView
     m_itemModel.setViewMode(qApp->CatalogViewModeSetting());
     ui->volumeList->setModel(&m_itemModel);
@@ -226,6 +230,12 @@ void CatalogWindow::dropEvent(QDropEvent *e)
     searchByWord(true);
 
     resetVolumes();
+}
+
+void CatalogWindow::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    qApp->setCatalogViewWidth(event->size().width());
 }
 
 void CatalogWindow::on_treeItemChanged(QString)

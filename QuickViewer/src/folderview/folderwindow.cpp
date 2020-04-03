@@ -17,6 +17,10 @@ FolderWindow::FolderWindow(QWidget *parent, Ui::MainWindow *)
 {
     ui->setupUi(this);
 
+#ifdef Q_OS_MACOS
+    ui->menuBar->setNativeMenuBar(false);
+#endif
+
     ui->folderView->installEventFilter(this);
 
     // folderView
@@ -116,6 +120,7 @@ void FolderWindow::dropEvent(QDropEvent *e)
 void FolderWindow::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
+    qApp->setFolderViewWidth(event->size().width());
     resetPathLabel(event->size().width());
 
 }
@@ -194,7 +199,9 @@ void FolderWindow::setFolderPath(QString path, bool showParent)
         if(sortmode == qvEnums::OrderByName) {
             qSort(m_volumes.begin(), m_volumes.end(), filenameLessThan);
         } else {
-            qSort(m_volumes.rbegin(), m_volumes.rend(), updatedAtLessThan);
+            typedef std::reverse_iterator<QList<QvFolderItem>::iterator> reverse_iterator;
+//            qSort(m_volumes.rbegin(), m_volumes.rend(), updatedAtLessThan);
+            qSort(reverse_iterator(m_volumes.end()), reverse_iterator(m_volumes.begin()), updatedAtLessThan);
         }
     }
 

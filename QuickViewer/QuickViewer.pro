@@ -16,7 +16,7 @@ contains(DEFINES, QV_WITHOUT_OPENGL) {
     QT += opengl opengl-private
 }
 
-VERSION = 1.0.9
+VERSION = 1.1.8
 
 TARGET = QuickViewer
 TEMPLATE = app
@@ -25,7 +25,7 @@ CONFIG += plugin
 QMAKE_TARGET_COMPANY = KATO Kanryu(k.kanryu@gmail.com)
 QMAKE_TARGET_PRODUCT = QuickViewer
 QMAKE_TARGET_DESCRIPTION = QuickViewer for folders/archives
-QMAKE_TARGET_COPYRIGHT = (C) 2017 KATO Kanryu
+QMAKE_TARGET_COPYRIGHT = (C) 2017-2019 KATO Kanryu
 
 DEFINES += \
   APP_VERSION=\\\"$$VERSION\\\" \
@@ -71,11 +71,28 @@ win32 {
         }
     }
     LIBS += -luser32 -ladvapi32 -lShlwapi -loleaut32 -lole32 -luuid
+
+    # copy official 7z.dll to build/bin/
+    QMAKE_POST_LINK += $$QMAKE_COPY /B $$shell_quote($$shell_path($$PWD/../Qt7z/Qt7z/windll/$${TARGET_ARCH}/7z.dll)) $$shell_path($${DESTDIR})
 }
-unix {
+linux {
     DEFINES += _UNIX
-    QMAKE_LFLAGS += -Wl,-rpath,../lib
     GCC_MAJOR = 6
+    contains(DEFINES, QV_PORTABLE) {
+        QMAKE_LFLAGS += -Wl,-rpath,../lib
+    } else {
+        QMAKE_LFLAGS += -Wl,-rpath,$${QV_LIB_PATH}
+    }
+}
+macos {
+    DEFINES += _UNIX
+    QMAKE_LFLAGS += -Wl,-rpath,../lib -Wl,-rpath,../Frameworks
+    GCC_MAJOR = 6
+    # Info.plist variables
+    QMAKE_INFO_PLIST = $$PWD/Info.plist
+    ICON = $$PWD/icons/quickviewer.icns
+    ASSETCATALOG_COMPILER_APPICON_NAME=quickviewer.icns
+    EXECTABLE_NAME=QuickViewer
 }
 
 
@@ -115,7 +132,10 @@ SOURCES += \
     src/qactionmanager/qmousesequence.cpp \
     src/qactionmanager/shortcutbutton.cpp \
     src/models/imagestring.cpp \
-    src/brightnesswindow.cpp
+    src/brightnesswindow.cpp \
+    src/models/fileoperator.cpp \
+    src/qlanguageselector/qtexttranslator.cpp \
+    src/models/qvimagemetadata.cpp
 
 
 HEADERS  += \
@@ -156,7 +176,10 @@ HEADERS  += \
     src/qactionmanager/qmousesequence.h \
     src/qactionmanager/shortcutbutton.h \
     src/models/imagestring.h \
-    src/brightnesswindow.h
+    src/brightnesswindow.h \
+    src/models/fileoperator.h \
+    src/qlanguageselector/qtexttranslator.h \
+    src/models/qvimagemetadata.h
 
 win32 {
     INCLUDEPATH += ../AssociateFilesWithQuickViewer
@@ -185,14 +208,21 @@ FORMS    += \
     ../AssociateFilesWithQuickViewer/fileassocdialog.ui \
     src/brightnesswindow.ui
 
-RESOURCES += toolbar.qrc
+RESOURCES += toolbar.qrc \
+    themes.qrc
 
 !CONFIG(debug, debug|release) {
     win32 {
         RESOURCES += qtconf-win.qrc
     }
-    unix {
-        RESOURCES += qtconf-unix.qrc
+    linux : contains(DEFINES, QV_PORTABLE) {
+        RESOURCES += qtconf-linux-appimage.qrc
+    }
+    linux : !contains(DEFINES, QV_PORTABLE) {
+#        RESOURCES += qtconf-linux.qrc
+    }
+    macos {
+        RESOURCES += qtconf-macos.qrc
     }
 }
 
@@ -204,6 +234,9 @@ DISTFILES += \
     translations/quickviewer_es.qm \
     translations/quickviewer_zh.qm \
     translations/quickviewer_el.qm \
+    translations/quickviewer_fr.qm \
+    translations/quickviewer_ru.qm \
+    translations/quickviewer_ar.qm \
 
 # Shaders will be installed into DIST_DIR/shaders
 SHADERS += \
@@ -233,18 +266,25 @@ win32 : !CONFIG(debug, debug|release) {
     mingw {
         MY_DEFAULT_INSTALL = ../../QuickViewer-$${VERSION}-mingw-$${TARGET_ARCH}
 
-        install_target.files = $${DESTDIR}/QuickViewer.exe $${DESTDIR}/AssociateFilesWithQuickViewer.exe $${LIBDIR}/fileloader.dll
+        install_target.files = $${DESTDIR}/QuickViewer.exe $${DESTDIR}/AssociateFilesWithQuickViewer.exe $${LIBDIR}/fileloader.dll $$PWD/../Qt7z/Qt7z/windll/$${TARGET_ARCH}/7z.dll
 
         INSTALLS += install_target install_deploy_files install_translations install_assoc_icons
     } else {
-        MY_DEFAULT_INSTALL = ../../QuickViewer-$${VERSION}-$${TARGET_ARCH}
+        contains(DEFINES, QV_PORTABLE) {
+            MY_DEFAULT_INSTALL = ../../QuickViewer-portable-$${VERSION}-$${TARGET_ARCH}
+        } else {
+            MY_DEFAULT_INSTALL = ../../QuickViewer-$${VERSION}/$${TARGET_ARCH}
+        }
 
-        install_target.files = $${DESTDIR}/QuickViewer.exe $${DESTDIR}/AssociateFilesWithQuickViewer.exe
+        install_target.files = $${DESTDIR}/QuickViewer.exe $${DESTDIR}/AssociateFilesWithQuickViewer.exe $$PWD/../Qt7z/Qt7z/windll/$${TARGET_ARCH}/7z.dll
 
         install_qrawspeed.path = $${MY_DEFAULT_INSTALL}/imageformats
         install_qrawspeed.files = \
             ../../../qrawspeed/imageformats-$${TARGET_ARCH}/qrawspeed0.dll \
             ../../../qrawspeed/imageformats-$${TARGET_ARCH}/qapng2.dll \
+            ../../../qrawspeed/imageformats-$${TARGET_ARCH}/qjp2.dll \
+            ../../../qrawspeed/imageformats-$${TARGET_ARCH}/qdds.dll \
+            ../../../qrawspeed/imageformats-$${TARGET_ARCH}/qjpegxr.dll \
 
 #            ../../../qrawspeed/imageformats-$${TARGET_ARCH}/qlodepng0.dll \
 
@@ -260,21 +300,31 @@ win32 : !CONFIG(debug, debug|release) {
             "$${install_msvcrt.PATH}/vccorlib140.dll" \
             "$${install_msvcrt.PATH}/vcruntime140.dll"
 
-        INSTALLS += install_target install_deploy_files install_translations install_qrawspeed install_msvcrt install_assoc_icons
+        INSTALLS += install_target install_deploy_files install_translations install_translations2 install_qrawspeed install_msvcrt install_assoc_icons
     }
     install_target.path = $${MY_DEFAULT_INSTALL}
 #   install_target.files += $${DESTDIR}/QuickViewer.exe $${DESTDIR}/AssociateFilesWithQuickViewer.exe $${LIBDIR}/fileloader.dll
     install_deploy_files.path = $${MY_DEFAULT_INSTALL}
     install_deploy_files.files = $${PWD}/../README.md $${PWD}/../LICENSE
     install_deploy_files.commands = $$shell_path($$[QT_INSTALL_BINS]/windeployqt) --release --compiler-runtime $$shell_path($${MY_DEFAULT_INSTALL}/QuickViewer.exe)
+
     install_translations.path = $${MY_DEFAULT_INSTALL}/translations
+    install_translations.commands = $$shell_path($$[QT_INSTALL_BINS]/../../../Tools/QtCreator/bin/qbs) resolve -f $${PWD}/translations/maketransconf.qbs qbs.installRoot:$${MY_DEFAULT_INSTALL}
     install_translations.files = \
         $${PWD}/translations/languages.ini \
         $${PWD}/translations/quickviewer_ja.qm \
         $${PWD}/translations/quickviewer_es.qm \
         $${PWD}/translations/quickviewer_zh.qm \
         $${PWD}/translations/quickviewer_el.qm \
+        $${PWD}/translations/quickviewer_fr.qm \
+        $${PWD}/translations/quickviewer_ru.qm \
+        $${PWD}/translations/quickviewer_ar.qm \
         $${PWD}/translations/qt_el.qm \
+
+    install_translations2.path = $${MY_DEFAULT_INSTALL}/translations
+    install_translations2.commands = $$shell_path($$[QT_INSTALL_BINS]/../../../Tools/QtCreator/bin/qbs) -f $${PWD}/translations/maketransconf.qbs qbs.installRoot:$${MY_DEFAULT_INSTALL}
+    install_translations2.depends = install_install_translations
+    install_translations2.files = \
         $$[QT_INSTALL_TRANSLATIONS]/qt_zh_CN.qm \
 
     install_assoc_icons.path = $${MY_DEFAULT_INSTALL}/iconengines
@@ -309,10 +359,12 @@ win32 : !CONFIG(debug, debug|release) {
 }
 
 # linuxdeployqt is required.
-linux : !CONFIG(debug, debug|release) {
+linux : !CONFIG(debug, debug|release) : contains(DEFINES, QV_PORTABLE) {
+
     APPDIR = QuickViewer-$${VERSION}-$${TARGET_ARCH}.AppDir
     APPIMAGE = QuickViewer-$${VERSION}-$${TARGET_ARCH}.AppImage
     MY_DEFAULT_INSTALL = ../../$${APPDIR}
+    message(DESTDIR $${DESTDIR})
 
     install_target.files = $${DESTDIR}/QuickViewer
     install_target.path = $${MY_DEFAULT_INSTALL}/usr/bin
@@ -324,15 +376,9 @@ linux : !CONFIG(debug, debug|release) {
     install_desktop.path = $${MY_DEFAULT_INSTALL}
 
     install_deploy_files.path = $${MY_DEFAULT_INSTALL}
-    install_deploy_files.files = $${PWD}/../README.md $${PWD}/AppRun
-    install_deploy_files.commands = linuxdeployqt $${MY_DEFAULT_INSTALL}/QuickViewer.desktop -qmake=$$[QT_INSTALL_BINS]/qmake -bundle-non-qt-libs ; rm $${MY_DEFAULT_INSTALL}/AppRun
+    install_deploy_files.files = $${PWD}/../README.md $${PWD}/../LICENSE
+    install_deploy_files.commands = linuxdeployqt $${MY_DEFAULT_INSTALL}/QuickViewer.desktop -qmake=$$[QT_INSTALL_BINS]/qmake -bundle-non-qt-libs
     install_deploy_files.depends = install_install_target install_install_libs install_install_desktop
-
-    install_apprun.path = $${MY_DEFAULT_INSTALL}
-    install_apprun.files = $${PWD}/../LICENSE
-    install_apprun.commands = chmod 755 $${MY_DEFAULT_INSTALL}/AppRun
-    install_apprun.depends = install_install_deploy_files
-
     install_translations.path = $${MY_DEFAULT_INSTALL}/translations
     install_translations.commands = ldd $${MY_DEFAULT_INSTALL}/usr/bin/QuickViewer | awk \'\$$1==\"libstdc++.so.$${GCC_MAJOR}\" {print \$$3}\' | xargs cp -t $${MY_DEFAULT_INSTALL}/usr/lib
     install_translations.files = \
@@ -341,6 +387,9 @@ linux : !CONFIG(debug, debug|release) {
         $${PWD}/translations/quickviewer_es.qm \
         $${PWD}/translations/quickviewer_zh.qm \
         $${PWD}/translations/quickviewer_el.qm \
+        $${PWD}/translations/quickviewer_fr.qm \
+        $${PWD}/translations/quickviewer_ru.qm \
+        $${PWD}/translations/quickviewer_ar.qm \
         $${PWD}/translations/qt_el.qm \
         $$[QT_INSTALL_TRANSLATIONS]/qt_zh_CN.qm \
 
@@ -365,9 +414,119 @@ linux : !CONFIG(debug, debug|release) {
 
     INSTALLS += install_target install_libs install_desktop install_deploy_files install_apprun install_translations install_assoc_icons install_appimage
 
+#    contains(DEFINES, QV_PORTABLE) {
+#        install_deploy_files.files += $${PWD}/AppRun
+#        install_deploy_files.files -= $${PWD}/../LICENSE
+
+#        install_apprun.path = $${MY_DEFAULT_INSTALL}
+#        install_apprun.files = $${PWD}/../LICENSE
+#        install_apprun.commands = chmod 755 $${MY_DEFAULT_INSTALL}/AppRun
+#        install_apprun.depends = install_install_deploy_files
+#    }
+
     install_shaders.path = $${MY_DEFAULT_INSTALL}/shared/shaders
     install_shaders.files = $$SHADERS
     install_db.path = $${MY_DEFAULT_INSTALL}/var/database
+    install_db.files = $$DBS $$DBBIN
+
+    INSTALLS += install_db
+    !contains(DEFINES, QV_WITHOUT_OPENGL) {
+        INSTALLS += install_shaders
+    }
+}
+
+# not portable, install into /usr/local/bin
+linux : !CONFIG(debug, debug|release) : !contains(DEFINES, QV_PORTABLE) {
+    APPDIR = QuickViewer-$${VERSION}-$${TARGET_ARCH}.AppDir
+    APPIMAGE = QuickViewer-$${VERSION}-$${TARGET_ARCH}.AppImage
+    MY_DEFAULT_INSTALL = ../../$${APPDIR}
+
+    install_target.files = $${DESTDIR}/QuickViewer
+    install_target.path = $${QV_BIN_PATH}
+
+    install_libs.files = $${DESTDIR}/../lib/libfileloader.so.1 $${DESTDIR}/../lib/lib7z.so
+    install_libs.path = $${QV_LIB_PATH}
+
+
+    install_deploy_files.path = $${QV_SHARED_PATH}/QuickViewer
+    install_deploy_files.files = $${PWD}/../README.md $${PWD}/../LICENSE
+    install_deploy_files.depends = install_install_target install_install_libs
+
+    install_translations.path = $$[QT_INSTALL_TRANSLATIONS]
+    install_translations.files = \
+        $${PWD}/translations/languages.ini \
+        $${PWD}/translations/quickviewer_ja.qm \
+        $${PWD}/translations/quickviewer_es.qm \
+        $${PWD}/translations/quickviewer_zh.qm \
+        $${PWD}/translations/quickviewer_el.qm \
+        $${PWD}/translations/quickviewer_fr.qm \
+        $${PWD}/translations/quickviewer_ru.qm \
+        $${PWD}/translations/quickviewer_ar.qm \
+        $${PWD}/translations/qt_el.qm
+
+    install_assoc_icons.path = $${QV_SHARED_PATH}/QuickViewer/icons
+    install_assoc_icons.files = \
+        ../AssociateFilesWithQuickViewer/icons/qv_apng.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_bmp.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_dds.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_gif.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_icon.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_jpeg.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_png.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_raw.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_tga.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_tiff.ico \
+        ../AssociateFilesWithQuickViewer/icons/qv_webp.ico \
+
+    INSTALLS += install_target install_libs install_deploy_files install_translations install_assoc_icons
+}
+
+macos : !CONFIG(debug, debug|release) {
+    APPDIR = QuickViewer.app
+    APPIMAGE = QuickViewer-$${VERSION}-$${TARGET_ARCH}.dmg
+    MY_DEFAULT_INSTALL = ../../$${APPDIR}
+
+    install_target.files = $${DESTDIR}/$${APPDIR}
+    install_target.path = ../../
+
+    install_libs.files = $${DESTDIR}/../lib/lib7z.1.0.dylib $${DESTDIR}/../lib/libfileloader.1.0.dylib
+    install_libs.commands = cp -rfp $${DESTDIR}/$${APPDIR} ../../
+    install_libs.path = $${MY_DEFAULT_INSTALL}/Contents/Frameworks
+
+    install_deploy_files.path = $${MY_DEFAULT_INSTALL}/Contents
+    install_deploy_files.files = $${PWD}/../README.md
+    install_deploy_files.commands = $$shell_path($$[QT_INSTALL_BINS]/macdeployqt) $${MY_DEFAULT_INSTALL} -libpath=$$${DESTDIR}/../lib
+    install_deploy_files.depends = install_install_target install_install_libs
+
+    install_translations.path = $${MY_DEFAULT_INSTALL}/Contents/Resources/translations
+    install_translations.commands = rm -f $${MY_DEFAULT_INSTALL}/Contents/PlugIns/sqldrivers/libqsqlmysql.dylib $${MY_DEFAULT_INSTALL}/Contents/PlugIns/sqldrivers/libqsqlpsql.dylib
+    install_translations.files = \
+        $${PWD}/translations/languages.ini \
+        $${PWD}/translations/quickviewer_ja.qm \
+        $${PWD}/translations/quickviewer_es.qm \
+        $${PWD}/translations/quickviewer_zh.qm \
+        $${PWD}/translations/quickviewer_el.qm \
+        $${PWD}/translations/quickviewer_fr.qm \
+        $${PWD}/translations/quickviewer_ru.qm \
+        $${PWD}/translations/quickviewer_ar.qm \
+        $${PWD}/translations/qt_el.qm \
+        $$[QT_INSTALL_TRANSLATIONS]/qt_zh_CN.qm \
+
+    install_dmg.path = $${MY_DEFAULT_INSTALL}/..
+    install_dmg.files = $${APPIMAGE}
+    install_dmg.commands = $$shell_path($$[QT_INSTALL_BINS]/macdeployqt) $${MY_DEFAULT_INSTALL} -no-plugins -no-strip -dmg
+    install_dmg.depends = install_install_deploy_files install_install_translations install_install_db
+
+    install_rename_dmg.path = $${MY_DEFAULT_INSTALL}/Contents
+    install_rename_dmg.files = test
+    install_rename_dmg.commands = mv ../../QuickViewer.dmg ../../$${APPIMAGE}
+    install_rename_dmg.depends = install_install_dmg
+
+    INSTALLS += install_target install_libs install_desktop install_deploy_files install_translations install_db install_dmg install_rename_dmg
+
+    install_shaders.path = $${MY_DEFAULT_INSTALL}/shared/shaders
+    install_shaders.files = $${MY_DEFAULT_INSTALL}/Contents/Resources/shaders
+    install_db.path = $${MY_DEFAULT_INSTALL}/Contents/Resources
     install_db.files = $$DBS $$DBBIN
 
     INSTALLS += install_db

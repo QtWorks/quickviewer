@@ -5,6 +5,7 @@
 #ifndef QV_WITHOUT_OPENGL
 #include <QtOpenGL>
 #include <QtOpenGL/private/qgraphicsshadereffect_p.h>
+#include "pagecontent.h"
 
 class LanczosShaderEffect : public QGraphicsShaderEffect
 {
@@ -120,6 +121,7 @@ void ShaderManager::prepare(QGraphicsPixmapItem *item, const ImageContent &, QSi
 {
     if(!item)
         return;
+    static QSize lastSize;
     qvEnums::ShaderEffect effect = qApp->Effect();
     switch(effect) {
     default: break;
@@ -133,8 +135,7 @@ void ShaderManager::prepare(QGraphicsPixmapItem *item, const ImageContent &, QSi
     case qvEnums::BilinearAndCpuSpline16:
     case qvEnums::BilinearAndCpuSpline36:
     case qvEnums::BilinearAndCpuLanczos:
-        if(m_oldEffect != qvEnums::Bilinear)
-            item->setTransformationMode(Qt::SmoothTransformation);
+        item->setTransformationMode(Qt::SmoothTransformation);
         if(m_oldEffect > qvEnums::UsingSomeShader)
             item->setGraphicsEffect(nullptr);
         break;
